@@ -244,5 +244,6 @@ layout_mode = 2
 [connection signal="pressed" from="TabContainer/ENet/Players/MarginContainer/VBoxContainer/Join" to="." method="_on_enet_join_pressed"]
 [connection signal="pressed" from="TabContainer/ENet/Players/MarginContainer/VBoxContainer/Start" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="TabContainer/Steam/Players/Start" to="." method="_on_start_pressed"]
+[connection signal="text_submitted" from="TabContainer/Steam/Connect/VBoxContainer/HBoxContainer/VBoxContainer/IPAddress" to="." method="_on_ip_address_text_submitted"]
 [connection signal="pressed" from="TabContainer/Steam/Connect/VBoxContainer/HBoxContainer/VBoxContainer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="TabContainer/Steam/Connect/VBoxContainer/HBoxContainer/VBoxContainer/Refresh" to="." method="_request_lobby_list"]

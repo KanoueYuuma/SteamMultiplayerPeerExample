@@ -34,7 +34,7 @@ func _ready():
 
 func _setup_ui():
 	#Should be customizable, ultimately
-	Steam.addRequestLobbyListDistanceFilter(Steam.LOBBY_DISTANCE_FILTER_CLOSE)
+	Steam.addRequestLobbyListDistanceFilter(Steam.LOBBY_DISTANCE_FILTER_WORLDWIDE)
 	
 	Steam.lobby_match_list.connect(
 		func(lobbies : Array):
@@ -133,3 +133,7 @@ func _on_enet_join_pressed():
 		gamestate.player_name,
 		"127.0.0.1" if enet_address_entry.text.is_empty()
 		else enet_address_entry.text)
+
+
+func _on_ip_address_text_submitted(new_text):
+	Steam.joinLobby(int(new_text))
