@@ -54,6 +54,8 @@ func _ready():
 	multiplayer.connected_to_server.connect(
 		func():
 			connection_succeeded.emit()	
+			register_player.rpc(player_name)
+			players[multiplayer.get_unique_id()] = player_name
 	)
 	multiplayer.connection_failed.connect(
 		func():
@@ -73,8 +75,8 @@ func _ready():
 			var id = Steam.getLobbyOwner(new_lobby_id)
 			if id != Steam.getSteamID():
 				connect_steam_socket(id)
-				register_player.rpc(player_name)
-				players[multiplayer.get_unique_id()] = player_name
+				#register_player.rpc(player_name)
+				#players[multiplayer.get_unique_id()] = player_name
 		else:
 			# Get the failure reason
 			var FAIL_REASON: String
