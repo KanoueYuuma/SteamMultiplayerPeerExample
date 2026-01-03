@@ -1,6 +1,7 @@
 extends HBoxContainer
 
-#BUG: Identical names lead to the wrong player getting points.
+#BUG: Identical names lead to clients getting different names for each client
+#     This also leads to unsorted names in uiawwwas
 
 var player_labels = {} # id : int to {name, label}
 
@@ -30,18 +31,20 @@ func add_player(id, new_player_name):
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.set_text(new_player_name + "\n" + "0")
 	l.set_h_size_flags(SIZE_EXPAND_FILL)
-	#var font = preload("res://montserrat.otf")
-	#l.set("custom_fonts/font", font)
-	#l.set("custom_font_size/font_size", 18)
+	var font := FontFile.new()
+	font = preload("res://montserrat.otf")
+	l.add_theme_font_override("font", font)
+	l.add_theme_font_size_override("font_size", 18)
 	add_child(l)
 
 	player_labels[id] = { name = new_player_name, label = l, score = 0 }
 
 
 func _ready():
-	for player in gamestate.players:
-		#TODO: Does not seem to be called for client?
-		add_player(player, gamestate.players[player])
+	var ids := gamestate.players.keys()
+	ids.sort()
+	for id in ids:
+		add_player(id, gamestate.players[id])
 	$"../Winner".hide()
 	set_process(true)
 

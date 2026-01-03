@@ -121,7 +121,7 @@ func _process(_delta : float):
 @rpc("call_local", "any_peer")
 func register_player(new_player_name : String):
 	var id = multiplayer.get_remote_sender_id()
-	players[id] = _make_string_unique(new_player_name)
+	players[id] = make_unique_username(new_player_name)
 	player_list_changed.emit()
 
 
@@ -225,15 +225,36 @@ func create_enet_client(new_player_name : String, address : String):
 #endregion
 
 #region Utility
+	
+func make_unique_username(requested_name: String,) -> String:
+		
+	# If the originally requested name is free, keep it
+	if not gamestate.players.values().has(requested_name):
+		return requested_name
+		
+	var base_name := requested_name
+	var number := 0
 
-func _make_string_unique(query : String) -> String:
-	var count := 2
-	var trial := query
-	if gamestate.players.values().has(trial):
-		trial = query + ' ' + str(count)
-		count += 1
-	return trial
+	# Detect trailing number (e.g. "Alice12")
+	var regex := RegEx.new()
+	regex.compile("(.*?)(\\d+)$")
+	var result := regex.search(requested_name)
 
+	if result:
+		base_name = result.get_string(1)
+		number = int(result.get_string(2))
+		print(str(base_name) + str(number))
+	else:
+		number = 2
+		print(number)
+
+	var candidate : String = base_name + str(number)
+	# Otherwise, increment until unique
+	while gamestate.players.values().has(candidate):
+		number += 1
+		candidate = base_name + str(number)
+	return candidate
+			
 @rpc("call_local", "any_peer")
 func get_player_name() -> String:
 	return players[multiplayer.get_remote_sender_id()]

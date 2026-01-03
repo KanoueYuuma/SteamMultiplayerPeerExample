@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://jhdlqsokif5o"]
 
-[ext_resource type="Script" path="res://lobby.gd" id="1"]
+[ext_resource type="Script" uid="uid://hh6aht5pligt" path="res://lobby.gd" id="1"]
 
 [node name="Lobby" type="VBoxContainer" node_paths=PackedStringArray("persona_name", "player_name", "error_label", "host", "address", "lobby_container", "steam_connect", "steam_players", "enet_address_entry", "enet_start_button")]
 anchors_preset = 15
@@ -34,9 +34,11 @@ text = "The Warrior"
 [node name="TabContainer" type="TabContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
+current_tab = 0
 
 [node name="ENet" type="Control" parent="TabContainer"]
 layout_mode = 2
+metadata/_tab_index = 0
 
 [node name="Players" type="PanelContainer" parent="TabContainer/ENet"]
 layout_mode = 1
@@ -92,10 +94,11 @@ text = "Start Game"
 [node name="Steam" type="Control" parent="TabContainer"]
 visible = false
 layout_mode = 2
+metadata/_tab_index = 1
 
 [node name="Players" type="Panel" parent="TabContainer/Steam"]
 visible = false
-layout_mode = 2
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = 31.0
@@ -171,7 +174,7 @@ placeholder_text = "Lobby ID"
 editable = false
 
 [node name="Connect" type="Panel" parent="TabContainer/Steam"]
-layout_mode = 2
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = 31.0

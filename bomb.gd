@@ -9,7 +9,7 @@ func explode():
 	if is_multiplayer_authority(): #Explode only for authority
 		for p in in_area:
 			#Start by ensuring we've got an explode function to call.
-			if p is Rock or p is NewPlayer or p is Player:	#TODO: Remember to 
+			if p is Rock or p is NewPlayer:	#TODO: Remember to 
 					#remove Player when we're done with it!
 				
 				# Check if there is wall in between bomb and the object
