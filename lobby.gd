@@ -136,4 +136,5 @@ func _on_enet_join_pressed():
 
 
 func _on_ip_address_text_submitted(new_text):
-	Steam.joinLobby(int(new_text))
+	var steam_username = Steam.getPersonaName()
+	gamestate.join_lobby(int(new_text),steam_username)
