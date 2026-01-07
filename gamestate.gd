@@ -36,9 +36,11 @@ func _ready():
 	# anywhere else, such as with a lambda function for readability.
 	
 	multiplayer.peer_connected.connect(
-		func(id : int):
-			# Tell the connected peer that we have also joined
-			register_player.rpc_id(id, player_name)
+		func(_id : int): 
+			# When ever a peer connects server tells everyone to update peer dictionary
+			if multiplayer.is_server():
+				for peer_id in players:
+					player_registered.rpc(peer_id,players[peer_id])
 	)
 	multiplayer.peer_disconnected.connect(
 		func(id : int):
@@ -53,9 +55,9 @@ func _ready():
 	)
 	multiplayer.connected_to_server.connect(
 		func():
-			connection_succeeded.emit()	
-			register_player.rpc(player_name)
-			players[multiplayer.get_unique_id()] = player_name
+			connection_succeeded.emit()
+			request_register_player.rpc(player_name)
+			
 	)
 	multiplayer.connection_failed.connect(
 		func():
@@ -72,11 +74,10 @@ func _ready():
 		func (new_lobby_id: int, _permissions: int, _locked: bool, response: int):
 		if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 			lobby_id = new_lobby_id
-			var id = Steam.getLobbyOwner(new_lobby_id)
-			if id != Steam.getSteamID():
-				connect_steam_socket(id)
-				#register_player.rpc(player_name)
-				#players[multiplayer.get_unique_id()] = player_name
+			var lobby_owner_id = Steam.getLobbyOwner(new_lobby_id)
+			if lobby_owner_id != Steam.getSteamID():
+				connect_steam_socket(lobby_owner_id)
+				#request_register_player.rpc(player_name)
 		else:
 			# Get the failure reason
 			var FAIL_REASON: String
@@ -118,11 +119,21 @@ func _process(_delta : float):
 	Steam.run_callbacks()
 
 # Lobby management functions.
-@rpc("call_local", "any_peer")
-func register_player(new_player_name : String):
+
+@rpc("any_peer","call_remote")
+func request_register_player(new_player_name : String):
+	if !multiplayer.is_server():
+		return
 	var id = multiplayer.get_remote_sender_id()
+
 	players[id] = make_unique_username(new_player_name)
+	player_registered.rpc(id,players[id])
+
+@rpc("authority","call_remote")
+func player_registered(peer_id : int, peer_name : String):
+	players[peer_id] = peer_name
 	player_list_changed.emit()
+	return
 
 
 func unregister_player(id):
@@ -210,17 +221,16 @@ func connect_steam_socket(steam_id : int):
 func create_enet_host(new_player_name : String):
 	peer = ENetMultiplayerPeer.new()
 	(peer as ENetMultiplayerPeer).create_server(DEFAULT_PORT)
-	player_name = new_player_name
-	players[1] = new_player_name
 	multiplayer.set_multiplayer_peer(peer)
+	player_name = new_player_name
+	var id := multiplayer.get_unique_id() # always 1
+	players[id] = new_player_name
+	player_registered.rpc(id,players[id])
 
 func create_enet_client(new_player_name : String, address : String):
 	peer = ENetMultiplayerPeer.new()
 	(peer as ENetMultiplayerPeer).create_client(address, DEFAULT_PORT)
 	multiplayer.set_multiplayer_peer(peer)
-	await multiplayer.connected_to_server
-	register_player.rpc(new_player_name)
-	players[multiplayer.get_unique_id()] = new_player_name
 
 #endregion
 

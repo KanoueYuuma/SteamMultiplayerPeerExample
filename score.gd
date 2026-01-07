@@ -1,8 +1,5 @@
 extends HBoxContainer
 
-#BUG: Identical names lead to clients getting different names for each client
-#     This also leads to unsorted names in uiawwwas
-
 var player_labels = {} # id : int to {name, label}
 
 func _process(_delta):
@@ -27,6 +24,9 @@ func increase_score(for_who : int):
 
 
 func add_player(id, new_player_name):
+	#if player_labels.has(id):
+		#return
+	
 	var l = Label.new()
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.set_text(new_player_name + "\n" + "0")
@@ -41,13 +41,23 @@ func add_player(id, new_player_name):
 
 
 func _ready():
+	print(gamestate.players)
+	#gamestate.player_list_changed.connect(refresh_labels)
+	var player_names = gamestate.players.values()
+	player_names.sort()
+	for player_name in player_names:
+		add_player(gamestate.players.find_key(player_name), player_name)
+	
+	$"../Winner".hide()
+	set_process(true)
+
+func refresh_labels():
+	
 	var ids := gamestate.players.keys()
 	ids.sort()
 	for id in ids:
 		add_player(id, gamestate.players[id])
-	$"../Winner".hide()
-	set_process(true)
-
+	
 
 func _on_exit_game_pressed():
 	gamestate.end_game()
