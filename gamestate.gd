@@ -127,6 +127,7 @@ func request_register_player(new_player_name : String):
 	var id = multiplayer.get_remote_sender_id()
 
 	players[id] = make_unique_username(new_player_name)
+	player_list_changed.emit()
 	player_registered.rpc(id,players[id])
 
 @rpc("authority","call_remote")
