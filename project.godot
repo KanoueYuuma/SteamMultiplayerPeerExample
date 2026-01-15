@@ -22,8 +22,8 @@ config/icon="res://icon.webp"
 [autoload]
 
 gamestate="*res://gamestate.gd"
-state_manager="*res://Globals/state_manager.gd"
-main_loop="*res://Globals/main_game_loop.gd"
+StateManager="*res://Globals/state_manager.gd"
+GameLoop="*res://Globals/main_game_loop.gd"
 
 [display]
 
