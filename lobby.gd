@@ -52,7 +52,7 @@ func _setup_ui():
 					func():
 						steam_connect.hide()
 						steam_players.show()
-						gamestate.join_lobby(
+						MultiplayerSystem.join_lobby(
 							sample,
 							player_name.text)
 				)
@@ -70,8 +70,7 @@ func _request_lobby_list():
 func _on_host_pressed():
 	steam_connect.hide()
 	steam_players.show()
-	gamestate.host_lobby(player_name.text)
-	#gamestate.host_game(player_name.text)
+	MultiplayerSystem.host_lobby(player_name.text)
 	refresh_lobby()
 
 func _on_connection_success():
@@ -101,20 +100,20 @@ func _on_game_log(logtxt : String):
 
 
 func refresh_lobby():
-	var players = gamestate.players.values()
+	var players = StateManager.data.player_name_comps.names
 	players.sort()
 	steam_players.get_node("List").clear()
 	for sample_name in players:
 		steam_players.get_node("List").add_item(
 			sample_name if 
-				sample_name != gamestate.player_name else 
+				sample_name != StateManager.data.player_name else 
 				(sample_name + " (You)")
 		)
 	
 	steam_players.get_node("Start").disabled = not multiplayer.is_server()
 	#Ensure we have an actual lobby ID before continuing
 	await Steam.lobby_joined
-	steam_players.get_node("LobbyID").text = str(gamestate.lobby_id)
+	steam_players.get_node("LobbyID").text = str(StateManager.data.lobby_id)
 	
 	_request_lobby_list()
 	
@@ -122,19 +121,19 @@ func _on_start_pressed():
 	gamestate.begin_game()
 
 func _on_enet_host_pressed():
-	gamestate.create_enet_host(player_name.text)
+	MultiplayerSystem.create_enet_host(player_name.text)
 	
 	#Issue: player isn't being added to `players` list
 	enet_start_button.disabled = false
 
 func _on_enet_join_pressed():
-	gamestate.player_name = player_name.text
-	gamestate.create_enet_client(
-		gamestate.player_name,
+	StateManager.data.player_name = player_name.text
+	MultiplayerSystem.create_enet_client(
+		StateManager.data.player_name,
 		"127.0.0.1" if enet_address_entry.text.is_empty()
 		else enet_address_entry.text)
 
 
 func _on_ip_address_text_submitted(new_text):
 	var steam_username = Steam.getPersonaName()
-	gamestate.join_lobby(int(new_text),steam_username)
+	MultiplayerSystem.join_lobby(int(new_text),steam_username)

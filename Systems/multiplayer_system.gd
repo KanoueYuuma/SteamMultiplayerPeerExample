@@ -1,5 +1,4 @@
 extends Node
-class_name MultiplayerSystem
 
 signal game_error(what : String)
 signal game_log(what : String)
@@ -52,6 +51,7 @@ func _ready() -> void:
 		func(status: int, new_lobby_id: int):
 			if status == 1:
 				#lobby_id = new_lobby_id
+				
 				Steam.setLobbyData(new_lobby_id, "name", 
 					str(Steam.getPersonaName(), "'s Spectabulous Test Server"))
 				create_steam_socket()
@@ -66,7 +66,6 @@ func _ready() -> void:
 			var lobby_owner_id = Steam.getLobbyOwner(new_lobby_id)
 			if lobby_owner_id != Steam.getSteamID():
 				connect_steam_socket(lobby_owner_id)
-				#request_register_player.rpc(player_name)
 		else:
 			# Get the failure reason
 			var FAIL_REASON: String
@@ -168,6 +167,22 @@ func remove_peer_player_relationship(peer_id : int):
 		StateManager.data.peer_player_rels.parent_uids.remove_at(index)
 		StateManager.data.peer_player_rels.child_uids.remove_at(index)
 
+
+#region Lobbies
+
+func host_lobby(new_player_name : String):
+	StateManager.data.player_name = new_player_name
+	var player_uid = ECS.create_entity()
+	player_registered.rpc(1, player_uid, StateManager.data.player_name)
+	#players[1] = new_player_name
+	Steam.createLobby(Steam.LOBBY_TYPE_PUBLIC, Consts.MAX_PEERS)
+
+
+func join_lobby(new_lobby_id : int, new_player_name : String):
+	StateManager.data.player_name = new_player_name
+	Steam.joinLobby(new_lobby_id)
+
+#endregion
 
 #region Steam Peer Management
 func create_steam_socket():

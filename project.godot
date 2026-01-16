@@ -24,6 +24,7 @@ config/icon="res://icon.webp"
 gamestate="*res://gamestate.gd"
 StateManager="*res://Globals/state_manager.gd"
 GameLoop="*res://Globals/main_game_loop.gd"
+MultiplayerSystem="*res://Systems/multiplayer_system.gd"
 
 [display]
 
