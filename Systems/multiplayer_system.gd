@@ -105,17 +105,16 @@ func request_register_player(new_player_name : String):
 		return
 	var peer_id = multiplayer.get_remote_sender_id()
 
-	#players[id] = make_unique_username(new_player_name)
 	var player_uid = ECS.create_entity()
-	player_registered.rpc(peer_id, player_uid, new_player_name)
+	player_registered.rpc(peer_id, player_uid, make_unique_username(new_player_name))
 
 @rpc("authority","call_local")
 func player_registered(peer_id : int, player_uid : int, peer_name : String):
 	#players[peer_id] = peer_name
-	gamestate.player_list_changed.emit()
 	create_peer_name_component(peer_id,peer_name)
 	create_player_name_component(player_uid,peer_name)
 	create_peer_player_relationship(peer_id,player_uid)
+	gamestate.player_list_changed.emit()
 
 
 

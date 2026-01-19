@@ -41,22 +41,21 @@ func add_player(id, new_player_name):
 
 
 func _ready():
-	print(gamestate.players)
-	#gamestate.player_list_changed.connect(refresh_labels)
-	var player_names = gamestate.players.values()
+	var player_names = StateManager.data.peer_name_comps.names
 	player_names.sort()
 	for player_name in player_names:
-		add_player(gamestate.players.find_key(player_name), player_name)
+		var index = StateManager.data.peer_name_comps.names.find(player_name)
+		add_player(StateManager.data.peer_name_comps.uids[index], player_name)
 	
 	$"../Winner".hide()
 	set_process(true)
 
-func refresh_labels():
-	
-	var ids := gamestate.players.keys()
-	ids.sort()
-	for id in ids:
-		add_player(id, gamestate.players[id])
+#func refresh_labels():
+	#
+	#var ids := gamestate.players.keys()
+	#ids.sort()
+	#for id in ids:
+		#add_player(id, gamestate.players[id])
 	
 
 func _on_exit_game_pressed():

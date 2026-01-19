@@ -180,11 +180,11 @@ func begin_game():
 	#Iterate over our connected peer ids
 	var spawn_index = 0
 	
-	for peer_id in players:
+	for peer_id in StateManager.data.peer_name_comps.uids:
 		print("PEER ID: ", peer_id)
 		var player : CharacterBody2D = player_scene.instantiate()
-		
-		player.set_player_name(players[peer_id])
+		var index = StateManager.data.peer_name_comps.uids.find(peer_id)
+		player.set_player_name(StateManager.data.peer_name_comps.names[index])
 		# "true" forces a readable name, which is important, as we can't have sibling nodes
 		# with the same name.
 		world.get_node("Players").add_child(player, true)
@@ -270,14 +270,14 @@ func begin_game():
 #func get_player_name() -> String:
 	#return players[multiplayer.get_remote_sender_id()]
 #
-#func is_game_in_progress() -> bool:
-	#return has_node("/root/World")
-#
-#func end_game():
-	#if is_game_in_progress():
-		#get_node("/root/World").queue_free()
-	#
-	#game_ended.emit()
-	#players.clear()
-#
+func is_game_in_progress() -> bool:
+	return has_node("/root/World")
+
+func end_game():
+	if is_game_in_progress():
+		get_node("/root/World").queue_free()
+	
+	game_ended.emit()
+	players.clear()
+
 ##endregion
