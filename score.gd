@@ -41,7 +41,7 @@ func add_player(id, new_player_name):
 
 
 func _ready():
-	var player_names = StateManager.data.peer_name_comps.names
+	var player_names = StateManager.data.peer_name_comps.names.duplicate()
 	player_names.sort()
 	for player_name in player_names:
 		var index = StateManager.data.peer_name_comps.names.find(player_name)
